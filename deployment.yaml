@@ -27,7 +27,7 @@ spec:
       # STEP 1: DEFINE THE "STORAGE LOCKER" (VOLUME) FOR THE POD
       # -----------------------------------------------------------------
       volumes:
-        - name: db-storage
+        - name: db-storagex
           persistentVolumeClaim:
             claimName: hospital-db-pvc # (Must match pvc.yaml name)
 
@@ -35,7 +35,7 @@ spec:
       containers:
         - name: api-container
           # This is our "blueprint" (image) from Docker!
-          image: meghanareddy08/clinic-management-api:1.2
+          image: meghanareddy08/clinic-management-api:latest
           # This tells Kubernetes to *not* try to pull the image
           # from the internet, but to use the local one we loaded.
           imagePullPolicy: Always # Fixed: moved under container item

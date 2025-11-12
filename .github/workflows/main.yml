@@ -1,42 +1,58 @@
-# This is the name of your automation workflow
-name: CI - Build and Push Docker Image
+name: CI/CD - Build and Deploy to Minikube
 
 # This tells GitHub *when* to run this workflow
 on:
-  # Run it on every push to the "main" branch
   push:
     branches: ["main"]
 
 # This defines the "jobs" (tasks) to run
 jobs:
-  build-and-push:
-    # This is the name of the job
+  # -------------------------------------------------
+  # JOB 1: BUILD (Runs in the Cloud)
+  # -------------------------------------------------
+  build:
     name: Build and Push to Docker Hub
-    # Run this job on a standard, fresh Ubuntu (Linux) server
+    # Run this job on GitHub's cloud server
     runs-on: ubuntu-latest
 
-    # These are the steps the job will take
     steps:
-      # 1. Check out your repository code
       - name: Check out code
         uses: actions/checkout@v4
 
-      # 2. Log in to Docker Hub
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
-          # Use the secrets you created in GitHub
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # 3. Build and push the Docker image
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          # Tell it where your Dockerfile is (in the root)
           context: .
-          # Push the image to Docker Hub
           push: true
-          # This is the name and tag for the new image
-          # CRITICAL: Change 'your-username' to your Docker ID
-          tags: meghanareddy08/clinic-management-api:latest
+          # This build will be tagged as "latest"
+          tags: your-username/clinic-management-api:latest # <--- MAKE SURE THIS IS YOUR USERNAME
+
+  # -------------------------------------------------
+  # JOB 2: DEPLOY (Runs on YOUR Laptop)
+  # -------------------------------------------------
+  deploy:
+    name: Deploy to Minikube
+    # This job *must* wait for the 'build' job to finish
+    needs: build
+
+    # This tells GitHub to send this job to YOUR runner
+    runs-on: self-hosted
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Minikube
+        # This command runs right on your laptop!
+        run: |
+          echo "Starting deployment to Minikube..."
+          kubectl apply -f .
+          echo "Deployment applied. Waiting for pods to roll out..."
+          kubectl rollout status deployment/clinic-management-api-deployment
+          echo "Deployment complete!"
