@@ -1,0 +1,51 @@
+# This is the "recipe" for Kubernetes
+# It tells Kubernetes what to run
+
+# This is the version of the Kubernetes API to use
+apiVersion: apps/v1
+# This is the TYPE of object we want to create
+kind: Deployment
+# This is the "name tag" for the Deployment itself
+metadata:
+  name: clinic-management-api-deployment
+spec:
+  # This is the "desired state"
+  # We want 3 identical copies (Pods) of our app
+  replicas: 3
+  # This tells the Deployment how to find the Pods it manages
+  selector:
+    matchLabels:
+      app: clinic-management-api
+  # This is the "blueprint" for the Pods (the "boxes")
+  template:
+    metadata:
+      # This "label" must match the selector above
+      labels:
+        app: clinic-management-api
+    spec:
+      # -----------------------------------------------------------------
+      # STEP 1: DEFINE THE "STORAGE LOCKER" (VOLUME) FOR THE POD
+      # -----------------------------------------------------------------
+      volumes:
+        - name: db-storage
+          persistentVolumeClaim:
+            claimName: hospital-db-pvc # (Must match pvc.yaml name)
+
+      # This is the list of containers to run inside each Pod
+      containers:
+        - name: api-container
+          # This is our "blueprint" (image) from Docker!
+          image: meghanareddy08/clinic-management-api:1.2
+          # This tells Kubernetes to *not* try to pull the image
+          # from the internet, but to use the local one we loaded.
+          imagePullPolicy: Always # Fixed: moved under container item
+          ports:
+            # This is the port *inside* the container that our
+            # uvicorn server is running on.
+            - containerPort: 8000
+          # -----------------------------------------------------------------
+          # STEP 3: "MOUNT" THE LOCKER INTO THE CONTAINER
+          # -----------------------------------------------------------------
+          volumeMounts:
+            - name: db-storage # <--- (Must match volume name above)
+              mountPath: /app/data # <--- (Must match path in database.py)

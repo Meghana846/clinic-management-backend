@@ -1,0 +1,24 @@
+# This is the "recipe" for our "front door"
+apiVersion: v1
+# This is the TYPE of object we want to create
+kind: Service
+metadata:
+  # This is the "name tag" for the Service itself
+  name: clinic-management-api-service
+spec:
+  # This tells the Service what kind of "front door" to be.
+  # "NodePort" means it will be accessible from *outside* the cluster.
+  type: NodePort
+  # This is the "waiter" part.
+  # It says: "Find all Pods with the label 'app: hospital-api'"
+  selector:
+    # THIS MUST MATCH THE 'app' LABEL IN YOUR DEPLOYMENT.YAML
+    app: clinic-management-api
+  ports:
+    # This section defines the port mapping
+    - protocol: TCP
+      # This is the port on the "front door" itself
+      port: 8000
+      # This is the port on the "boxes" (Pods) to send traffic to
+      # (This must match the 'containerPort' in your deployment)
+      targetPort: 8000

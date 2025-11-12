@@ -1,0 +1,15 @@
+# This is the "recipe" for our "storage locker"
+apiVersion: v1
+# This is the TYPE of object we want to create
+kind: PersistentVolumeClaim
+metadata:
+  # This is the "name tag" for our storage locker
+  name: hospital-db-pvc
+spec:
+  # This requests a storage type that can be read AND written
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    # This is the size of the "locker" we want
+    requests:
+      storage: 1Gi
