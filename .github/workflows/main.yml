@@ -31,7 +31,7 @@ jobs:
           context: .
           push: true
           # This build will be tagged as "latest"
-          tags: your-username/clinic-management-api:latest # <--- MAKE SURE THIS IS YOUR USERNAME
+          tags: meghanareddy08/clinic-management-api:latest # <--- MAKE SURE THIS IS YOUR USERNAME
 
   # -------------------------------------------------
   # JOB 2: DEPLOY (Runs on YOUR Laptop)
