@@ -27,7 +27,7 @@ spec:
       # STEP 1: DEFINE THE "STORAGE LOCKER" (VOLUME) FOR THE POD
       # -----------------------------------------------------------------
       volumes:
-        - name: db-storagex
+        - name: db-storage
           persistentVolumeClaim:
             claimName: hospital-db-pvc # (Must match pvc.yaml name)
 
